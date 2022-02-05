@@ -29,7 +29,8 @@ export class Rental {
   //Anyone can be interested in any rental, argument is no. of hours they will need it for
   @mutateState()
   interested( hours: u128): void{
-    assert(this.state == States.Free, `Vehicle is not currently free and is in the process of being rented to ${this.tenant}`);
+    assert(this.state != States.Processing, `Vehicle is not currently free and is in the process of being rented to ${this.tenant}`);
+    assert(this.state != States.Booked, `Vehicle is booked by ${this.tenant}`);
     this.tenant=Context.sender;
     this.state=States.Processing;
     this.price=u128.mul(ONE_NEAR,u128.mul(hours,this.pricePerHour));
@@ -58,12 +59,12 @@ export class Rental {
   //Reset function to reset the rental instead of adding it again
   @mutateState()
   reset(): void{
-    assert(this.state=States.Booked,`Only reset if the booking is over and you need to post it again.`);
-    assert(this.owner=Context.sender,`Only owner can reset`);
+    assert(this.state==States.Booked,`Only reset if the booking is over and you need to post it again.`);
+    assert(this.owner==Context.sender,`Only owner can reset`);
     this.state=States.Free;
     this.approved=false;
-    this.tenant=null;
-    this.price=null;
+    this.tenant="";
+    this.price=u128.from(0);
   }
 }
 

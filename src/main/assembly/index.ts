@@ -34,11 +34,12 @@ export function getStatus(key:u32): void{
 }
 
 // Since we cant change attributes of the elements in a persistent vector, a suboptimal solution was to delete that object,create
-// a new object with its properties and add it back at the initial index in the persistent vector. 
+// a new object with its properties and add it back at the initial index in the persistent vector. This is done by the three helper functions
+
+// To show interest in a rental
 export function interestedInARental(key:u128, hours:u128): void{
 	let previous=deleteNormally(key);
-	let o=new Rental(previous.vehicle, previous.description, previous.pricePerHour);
-	o.owner=previous.owner;
+	let o=transferProperties(previous);
 	o.interested(hours);
 	logging.log(`Once approved,you need to pay ${u128.div(o.price,ONE_NEAR)} NEAR`);
 	pushAtIndex(o, key);
@@ -47,11 +48,7 @@ export function interestedInARental(key:u128, hours:u128): void{
 // Give approval to tenant, can only be called by the owner
 export function giveApproval(key:u128) :void{
 	let previous=deleteNormally(key);
-	let o=new Rental(previous.vehicle, previous.description, previous.pricePerHour);
-	o.owner=previous.owner;
-	o.state=previous.state;
-	o.price=previous.price; 
-	o.tenant=previous.tenant;
+	let o=transferProperties(previous);
 	o.give_Approval();
 	logging.log(`${o.owner} has given approval to ${o.tenant}`);
 	pushAtIndex(o, key);
@@ -60,12 +57,7 @@ export function giveApproval(key:u128) :void{
 //Function to pay for the rental 
 export function pay(key:u128): void{
 	let previous=deleteNormally(key);
-	let o=new Rental(previous.vehicle, previous.description, previous.pricePerHour);
-	o.owner=previous.owner;
-	o.state=previous.state;
-	o.price=previous.price;
-	o.approved=previous.approved;
-	o.tenant=previous.tenant;
+	let o=transferProperties(previous);
 	o.do_payment();
 	pushAtIndex(o, key);
 	logging.log(`Successfully payment done of ${o.price} by ${o.tenant} towards ${o.owner}`);
@@ -77,6 +69,26 @@ export function deleteRental( key: u32): bool {
 	logging.log(`Successfully removed Rental indexed by ${key}`);
 	deleteNormally(u128.from(key));
 	return true
+}
+
+// Reset a rental after it was booked
+export function resetRental(key: u128): void{
+	let previous=deleteNormally(key);
+	let o=transferProperties(previous);
+	o.reset();
+	pushAtIndex(o, key);
+	logging.log(`Successfully resetted. Current tenant is ${o.tenant},price is ${o.price}`);
+}
+
+//Helper function to transfer the properties from the previous object to the new object.
+function transferProperties(previous: Rental): Rental{
+	let o=new Rental(previous.vehicle, previous.description, previous.pricePerHour);
+	o.owner=previous.owner;
+	o.state=previous.state;
+	o.price=previous.price;
+	o.approved=previous.approved;
+	o.tenant=previous.tenant;
+	return o;
 }
 
 //Helper function to delete an element at an index

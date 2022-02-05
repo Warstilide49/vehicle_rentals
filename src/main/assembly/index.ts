@@ -38,7 +38,7 @@ export function getStatus(key:u32): void{
 
 // To show interest in a rental
 export function interestedInARental(key:u128, hours:u128): void{
-	let previous=deleteNormally(key);
+	let previous=deleteAtIndex(key);
 	let o=transferProperties(previous);
 	o.interested(hours);
 	logging.log(`Once approved,you need to pay ${u128.div(o.price,ONE_NEAR)} NEAR`);
@@ -47,7 +47,7 @@ export function interestedInARental(key:u128, hours:u128): void{
 
 // Give approval to tenant, can only be called by the owner
 export function giveApproval(key:u128) :void{
-	let previous=deleteNormally(key);
+	let previous=deleteAtIndex(key);
 	let o=transferProperties(previous);
 	o.give_Approval();
 	logging.log(`${o.owner} has given approval to ${o.tenant}`);
@@ -56,7 +56,7 @@ export function giveApproval(key:u128) :void{
 
 //Function to pay for the rental 
 export function pay(key:u128): void{
-	let previous=deleteNormally(key);
+	let previous=deleteAtIndex(key);
 	let o=transferProperties(previous);
 	o.do_payment();
 	pushAtIndex(o, key);
@@ -67,13 +67,13 @@ export function pay(key:u128): void{
 export function deleteRental( key: u32): bool {
 	assert(Context.sender==rentals[key].owner,`A rental can only be deleted by their owner who is ${rentals[key].owner}`);
 	logging.log(`Successfully removed Rental indexed by ${key}`);
-	deleteNormally(u128.from(key));
+	deleteAtIndex(u128.from(key));
 	return true
 }
 
 // Reset a rental after it was booked
 export function resetRental(key: u128): void{
-	let previous=deleteNormally(key);
+	let previous=deleteAtIndex(key);
 	let o=transferProperties(previous);
 	o.reset();
 	pushAtIndex(o, key);
@@ -92,7 +92,7 @@ function transferProperties(previous: Rental): Rental{
 }
 
 //Helper function to delete an element at an index
-function deleteNormally(index:u128): Rental{
+function deleteAtIndex(index:u128): Rental{
 	let temp=new PersistentVector<Rental>("temp");
 	let i:u128;
 	if(index== u128.from(rentals.length-1)){

@@ -86,5 +86,5 @@ Three helper functions were used to facilitate writing into a PersistentVector.
 - Managing multiple interests in a rental.
 - Maintaining time to ensure late fees is charged
 - Addition of IOT to keep tabs on the vehicle.
-- Unit tests
+- Integration of IPFS to store and serve images.
 - Frontend

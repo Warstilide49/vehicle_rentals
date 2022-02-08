@@ -11,7 +11,7 @@ export function addRental(vehicle: string, description: string, pricePerHour:u12
 //Logs all the rentals available with their current state.
 export function getAllRentals():void{
 	for(let i=0;i<rentals.length; i++){
-		logging.log(`Index:${i} : Rental published by ${rentals[i].owner} with description "${rentals[i].description}" and price per hour of ${rentals[i].pricePerHour}. Current state is ${rentals[i].state}`);
+		logging.log(`Index:${i} : Rental published by ${rentals[i].owner} for vehicle ${rentals[i].vehicle} with description "${rentals[i].description}" and price per hour of ${rentals[i].pricePerHour}. Current state is ${rentals[i].state}`);
 	}
 }
 
@@ -33,34 +33,39 @@ export function getStatus(key:u32): void{
 	}
 }
 
-// Since we cant change attributes of the elements in a persistent vector, a suboptimal solution was to delete that object,create
-// a new object with its properties and add it back at the initial index in the persistent vector. This is done by the three helper functions
+// Since we cant change attributes of the elements in a persistent vector, a suboptimal solution was to delete that object, apply the
+// function and add it back at the initial index in the persistent vector. This is done by the two helper functions
 
 // To show interest in a rental
 export function interestedInARental(key:u128, hours:u128): void{
 	let previous=deleteAtIndex(key);
-	let o=transferProperties(previous);
-	o.interested(hours);
-	logging.log(`Once approved,you need to pay ${u128.div(o.price,ONE_NEAR)} NEAR`);
-	pushAtIndex(o, key);
+	previous.interested(hours);
+	logging.log(`Once approved,you need to pay ${u128.div(previous.price,ONE_NEAR)} NEAR`);
+	pushAtIndex(previous, key);
 }
 
 // Give approval to tenant, can only be called by the owner
 export function giveApproval(key:u128) :void{
 	let previous=deleteAtIndex(key);
-	let o=transferProperties(previous);
-	o.give_Approval();
-	logging.log(`${o.owner} has given approval to ${o.tenant}`);
-	pushAtIndex(o, key);
+	previous.give_Approval();
+	logging.log(`${previous.owner} has given approval to ${previous.tenant}`);
+	pushAtIndex(previous, key);
+}
+
+// To reject a tenant
+export function rejectApproval(key:u128) :void{
+	let previous=deleteAtIndex(key);
+	previous.reject_Approval();
+	logging.log(`${previous.owner} has rejected the approval to ${previous.tenant}`);
+	pushAtIndex(previous, key);
 }
 
 //Function to pay for the rental 
 export function pay(key:u128): void{
 	let previous=deleteAtIndex(key);
-	let o=transferProperties(previous);
-	o.do_payment();
-	pushAtIndex(o, key);
-	logging.log(`Successfully payment done of ${o.price} by ${o.tenant} towards ${o.owner}`);
+	previous.do_payment();
+	pushAtIndex(previous, key);
+	logging.log(`Successfully payment done of ${previous.price} by ${previous.tenant} towards ${previous.owner}`);
 }
 
 //Delete A Rental from the Persistent Vector
@@ -74,21 +79,9 @@ export function deleteRental( key: u32): bool {
 // Reset a rental after it was booked
 export function resetRental(key: u128): void{
 	let previous=deleteAtIndex(key);
-	let o=transferProperties(previous);
-	o.reset();
-	pushAtIndex(o, key);
-	logging.log(`Successfully resetted. Current tenant is ${o.tenant},price is ${o.price}`);
-}
-
-//Helper function to transfer the properties from the previous object to the new object.
-function transferProperties(previous: Rental): Rental{
-	let o=new Rental(previous.vehicle, previous.description, previous.pricePerHour);
-	o.owner=previous.owner;
-	o.state=previous.state;
-	o.price=previous.price;
-	o.approved=previous.approved;
-	o.tenant=previous.tenant;
-	return o;
+	previous.reset();
+	pushAtIndex(previous, key);
+	logging.log(`Successfully resetted. Current tenant is ${previous.tenant},price is ${previous.price}`);
 }
 
 //Helper function to delete an element at an index
@@ -130,6 +123,7 @@ function pushAtIndex(toBeAdded: Rental,index:u128): bool{
 	return true;
 }
 
+/*
 
 //Demo to check if the functions are even working. This gave me insight into how we cannot change attributes of elements in a persistent vector.
 export function forOneObject(vehicle: string, description: string, pricePerHour:u128, hours:u128): void{
@@ -142,3 +136,4 @@ export function forOneObject(vehicle: string, description: string, pricePerHour:
 	o.do_payment()
 	logging.log(`Successfully payment done of ${o.price} by ${o.tenant} towards ${o.owner}`);
 }
+*/

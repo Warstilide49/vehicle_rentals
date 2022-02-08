@@ -60,6 +60,9 @@ The functions which can be used are the ones in index.ts. They have been listed 
 6. giveApproval (change function)
  - Function will give approval to the tenant to use their vehicle. It is assumed that they have established contact and done necessary verification.
  - Can only be called by the owner of the rental
+8. rejectApproval (change function)
+ - Function will reject approval to the tenant to use their vehicle.It will reset the object properties.
+ - Can only be called by the owner of the rental
 7. pay (change function)
  - Function to pay the necessary amount i.e. ```pricePerHour * hours``` to the owner of the rental.
  -Can only be called by the tenant after seeking approval.
@@ -78,8 +81,6 @@ Three helper functions were used to facilitate writing into a PersistentVector.
  - Used to delete any object from the PersistentVector so as to maintain their order
 2. pushAtIndex
  - Used to push any object at an index to the PersistentVector so as to maintain their order.
-3. transferProperties
- - takes input of an object which will be deleted and transfers it to a new object which will be returned by the function.
 
 ## Future plans
 

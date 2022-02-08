@@ -21,6 +21,7 @@ export class Rental {
   constructor(vehicle: string, description: string, pricePerHour:u128) {
     this.owner = Context.sender;
     this.state = States.Free;
+    this.vehicle=vehicle;
     this.description = description;
     this.pricePerHour=pricePerHour;
     this.approved=false;
@@ -44,6 +45,15 @@ export class Rental {
       assert(this.owner==Context.sender, `Approval can only be granted by the rentee.`);
       this.approved=true;
     }
+  }
+
+  //To not give permission
+  reject_Approval(): void{
+    assert(this.approved==false, `It has already been approved, cant be rejected now.`);
+    assert(this.state==States.Processing,` The rental should be processing, not free or booked`);
+    this.state=States.Free;
+    this.tenant="";
+    this.price=u128.from(0);
   }
 
   //Payment will be done by the chosen tenant towards the owner once approved

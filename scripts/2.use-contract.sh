@@ -23,10 +23,10 @@ echo "Adding 4 rentals in the name of [$ACC1] "
 echo ---------------------------------------------------------
 echo 
 
-near call $CONTRACT addRental '{"vehicle":"Car","description":"first one","pricePerHour":"1"}' --accountId $ACC1
-near call $CONTRACT addRental '{"vehicle":"Bike","description":"second one","pricePerHour":"3"}' --accountId $ACC1
-near call $CONTRACT addRental '{"vehicle":"Scooter","description":"third one","pricePerHour":"4"}' --accountId $ACC1
-near call $CONTRACT addRental '{"vehicle":"3-wheeled scooter","description":"fourth one","pricePerHour":"5"}' --accountId $ACC1
+near call $CONTRACT addRental '{"vehicle":"Car","description":"A Tesla is available for rent. Contact tesla@gmail.com or +1234567890 for more details.","pricePerHour":"1"}' --accountId $ACC1
+near call $CONTRACT addRental '{"vehicle":"Bike","description":"A bike is available for rent. Contact bike@gmail.com or +1111111111 for more details","pricePerHour":"3"}' --accountId $ACC1
+near call $CONTRACT addRental '{"vehicle":"Scooter","description":"A scooter is available for rent. Contact scooty@gmail.com or +2222222222 for details.","pricePerHour":"4"}' --accountId $ACC1
+near call $CONTRACT addRental '{"vehicle":"3-wheeled scooter","description":"A 3-wheeled scooter is available for rent. Contact us for details.","pricePerHour":"5"}' --accountId $ACC1
 
 echo ---------------------------------------------------------
 echo "Checking current rentals.."
